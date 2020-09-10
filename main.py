@@ -1,3 +1,6 @@
+# Bot that generates Danny Phantom lines based on the show's transcript
+# Gets smarter with each run (runs a pass-through with each run
+
 from textgenrnn import textgenrnn
 
 import oauth2
@@ -18,13 +21,12 @@ CONSUMER_SECRET = 'x'
 OAUTH_TOKEN = 'x'
 OAUTH_SECRET = 'x'
 
-BLOG_NAME = 'dannyfentonaiquotes'
+BLOG_NAME = 'dannyphantombot'
 TAGS = ['danny phantom', 'AI-generated quote', 'machine learning', 'danny fenton']
 
 def setup_model():
-    #textgen = textgenrnn()
-    #textgen.train_from_file(CHARACTER + '.txt', num_epochs=1) #increase epochs for more accurate quotes
-    textgen = textgenrnn('textgenrnn_weights.hdf5')
+    textgen = textgenrnn(CHARACTER + '_weights.hdf5')
+    textgen.train_from_file(CHARACTER + '.txt', num_epochs=1)
     return textgen
 
 def generate_quote(textgen):
@@ -34,7 +36,7 @@ def generate_quote(textgen):
     new_stdout = io.StringIO()
     sys.stdout = new_stdout
 
-    textgen.generate(temperature=0.2)
+    textgen.generate(temperature=0.3)
 
     generated_quote = new_stdout.getvalue()
     sys.stdout = old_stdout
@@ -59,10 +61,8 @@ def post_quote(generated_quote):
 def setup():
     textgen = setup_model()
 
-    for x in range(50): #tumblr allows up to 50 queued posts a day
+    for x in range(30):
         generated_quote = generate_quote(textgen)
-        #print(generated_quote)
-        #generated_quote = 'testing......'
         post_quote(generated_quote)
 
     print('Posts successfully queued')
@@ -71,3 +71,5 @@ def setup():
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     setup()
+
+# See PyCharm help at https://www.jetbrains.com/help/pycharm/
